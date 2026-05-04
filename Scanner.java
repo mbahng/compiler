@@ -153,6 +153,10 @@ public class Scanner {
               default: 
                 addToken(TokenType.IDENTIFIER);
             }
+          } 
+
+          else {
+            System.err.println("Error on line " + this.line); 
           }
       } 
       j++; 
