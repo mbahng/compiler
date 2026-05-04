@@ -1,3 +1,5 @@
+package com.mbahng.lox;
+
 import java.io.BufferedReader; 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -48,9 +50,13 @@ public class Lox {
     Scanner scanner = new Scanner(source);  
     List<Token> tokens = scanner.scanTokens(); 
 
-    for (Token token : tokens) {
-      System.out.println(token);
-    } 
+    // for (Token token : tokens) {
+    //   System.out.println(token);
+    // } 
+    
+    Parser parser = new Parser(tokens); 
+    Expr expression = parser.parse();
+    System.out.println(new AstPrinter().print(expression));
   } 
 
   // static void error(int line, String message) {
