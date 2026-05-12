@@ -50,7 +50,7 @@ public class Scanner {
           }
           break;
         case '=': 
-          if (source.charAt(j+1) == '=') {
+          if (j + 1 < source.length() && source.charAt(j+1) == '=') {
             j++;
             addToken(TokenType.EQUAL_EQUAL); 
           }
@@ -59,7 +59,7 @@ public class Scanner {
           }
           break;
         case '>': 
-          if (source.charAt(j+1) == '=') {
+          if (j + 1 < source.length() && source.charAt(j+1) == '=') {
             j++;
             addToken(TokenType.GREATER_EQUAL); 
           }
@@ -68,7 +68,7 @@ public class Scanner {
           }
           break;
         case '<': 
-          if (source.charAt(j+1) == '=') {
+          if (j + 1 < source.length() && source.charAt(j+1) == '=') {
             j++;
             addToken(TokenType.LESS_EQUAL); 
           }
@@ -77,7 +77,7 @@ public class Scanner {
           }
           break;
         case '"': 
-          while (source.charAt(++j) != '"') { 
+          while (j + 1 < source.length() && source.charAt(++j) != '"') { 
           } 
           j++;
           addToken(TokenType.STRING, this.source.substring(i, j));
@@ -88,19 +88,24 @@ public class Scanner {
         default: 
           if (Character.isDigit(c)) {  
             // encode an integer
-            while (Character.isDigit(source.charAt(++j))) {}
+            while (j + 1 < source.length() && Character.isDigit(source.charAt(j + 1))) {
+              j++;
+            }
+            j++;
             addToken(TokenType.NUMBER, Integer.parseInt(source.substring(i, j))); 
             break;
           }
           else if (Character.isLetter(c)){
             // if it doesn't start with a digit, then it is either a keyword or identifier 
-            while (source.charAt(++j) != ' ') {
+            while (j + 1 < source.length() && source.charAt(j + 1) != ' ') {
+              j++;
               // make sure that for identifiers or keywords, it should not have invalid characters
               if (!(Character.isLetterOrDigit(source.charAt(j)) || source.charAt(j) == '|')) {
                 System.out.println("bruh");
                 System.exit(1); 
               }
             } 
+            j++;
             String lexeme = source.substring(i, j); 
 
             switch (lexeme) {
@@ -165,7 +170,7 @@ public class Scanner {
       i = j;
     }
 
-    // tokens.add(new Token(TokenType.EOF, "", null, this.line));
+    tokens.add(new Token(TokenType.EOF, "", null, this.line));
     return this.tokens;
   }
 }
