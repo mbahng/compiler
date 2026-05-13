@@ -28,21 +28,56 @@ public class Scanner {
     while (j < source.length()) {
       char c = source.charAt(j);    // read and scan next token 
       switch(c) { 
-        case '(': addToken(TokenType.RIGHT_PAREN); break; 
-        case ')': addToken(TokenType.LEFT_PAREN); break; 
-        case '{': addToken(TokenType.LEFT_BRACE); break; 
-        case '}': addToken(TokenType.RIGHT_BRACE); break; 
-        case ',': addToken(TokenType.COMMA); break; 
-        case '.': addToken(TokenType.DOT); break; 
-        case '-': addToken(TokenType.MINUS); break; 
-        case '+': addToken(TokenType.PLUS); break; 
-        case ';': addToken(TokenType.SEMICOLON); break; 
-        case '/': addToken(TokenType.SLASH); break; 
-        case '*': addToken(TokenType.STAR); break; 
-        case ' ': break;
+        case '(': 
+	  j++;
+	  addToken(TokenType.LEFT_PAREN); 
+	  break; 
+        case ')': 
+	  j++;
+	  addToken(TokenType.RIGHT_PAREN); 
+	  break; 
+        case '{': 
+	  j++;
+	  addToken(TokenType.LEFT_BRACE); 
+	  break; 
+        case '}': 
+	  j++;
+	  addToken(TokenType.RIGHT_BRACE); 
+	  break; 
+        case ',': 
+	  j++;
+	  addToken(TokenType.COMMA); 
+	  break; 
+        case '.': 
+	  j++;
+	  addToken(TokenType.DOT); 
+	  break; 
+        case '-': 
+	  j++;
+	  addToken(TokenType.MINUS); 
+	  break; 
+        case '+': 
+	  j++;
+	  addToken(TokenType.PLUS); 
+	  break; 
+        case ';': 
+	  j++;
+	  addToken(TokenType.SEMICOLON); 
+	  break; 
+        case '/': 
+	  j++;
+	  addToken(TokenType.SLASH); 
+	  break; 
+        case '*': 
+	  j++;
+	  addToken(TokenType.STAR); 
+	  break; 
+        case ' ': 
+	  j++;
+	  break;
         case '!': 
           if (j + 1 < source.length() && source.charAt(j+1) == '=') {
-            j++;
+            j += 2;
             addToken(TokenType.BANG_EQUAL); 
           }
           else { 
@@ -51,7 +86,7 @@ public class Scanner {
           break;
         case '=': 
           if (j + 1 < source.length() && source.charAt(j+1) == '=') {
-            j++;
+            j += 2;
             addToken(TokenType.EQUAL_EQUAL); 
           }
           else { 
@@ -60,7 +95,7 @@ public class Scanner {
           break;
         case '>': 
           if (j + 1 < source.length() && source.charAt(j+1) == '=') {
-            j++;
+            j += 2;
             addToken(TokenType.GREATER_EQUAL); 
           }
           else { 
@@ -69,7 +104,7 @@ public class Scanner {
           break;
         case '<': 
           if (j + 1 < source.length() && source.charAt(j+1) == '=') {
-            j++;
+            j += 2;
             addToken(TokenType.LESS_EQUAL); 
           }
           else { 
@@ -83,6 +118,7 @@ public class Scanner {
           addToken(TokenType.STRING, this.source.substring(i, j));
           break;
         case '\n': 
+	  j++;
           this.line++; 
           break; 
         default: 
@@ -100,8 +136,8 @@ public class Scanner {
             while (j + 1 < source.length() && source.charAt(j + 1) != ' ') {
               j++;
               // make sure that for identifiers or keywords, it should not have invalid characters
-              if (!(Character.isLetterOrDigit(source.charAt(j)) || source.charAt(j) == '|')) {
-                System.out.println("bruh");
+              if (!(Character.isLetterOrDigit(source.charAt(j)) || source.charAt(j) == '_')) {
+                System.out.println("bad characters for identifiers");
                 System.exit(1); 
               }
             } 
@@ -166,7 +202,6 @@ public class Scanner {
             System.err.println("Error on line " + this.line); 
           }
       } 
-      j++; 
       i = j;
     }
 

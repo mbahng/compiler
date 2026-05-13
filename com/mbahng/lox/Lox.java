@@ -10,10 +10,13 @@ import java.util.List;
 
 public class Lox { 
   public static void main(String args[]) throws IOException { 
+    // args = null;
+    // args = new String[1]; 
+    // args[0] = "tests/integration/example.lox";
     if (args.length > 1) {
-      System.err.println("Too many args bruh"); 
+      System.err.println("Too many args");
       System.exit(64);
-    } 
+    }
     else if (args.length == 1) {
       runFile(args[0]);
     } 
@@ -24,12 +27,7 @@ public class Lox {
 
   private static void runFile(String path) throws IOException { 
     byte[] bytes = Files.readAllBytes(Paths.get(path)); 
-    System.out.println(bytes.length); 
-    System.out.println(bytes); 
-    System.out.println(Charset.defaultCharset());
     run(new String(bytes, Charset.defaultCharset())); 
-
-    // System.out.println(new String(bytes, Charset.defaultCharset()));
   }
 
   private static void runPrompt() throws IOException {
@@ -49,10 +47,6 @@ public class Lox {
   private static void run(String source) { 
     Scanner scanner = new Scanner(source);  
     List<Token> tokens = scanner.scanTokens(); 
-
-    // for (Token token : tokens) {
-    //   System.out.println(token);
-    // } 
     
     Parser parser = new Parser(tokens); 
     Expr expression = parser.parse();

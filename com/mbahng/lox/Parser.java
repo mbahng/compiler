@@ -21,51 +21,19 @@ class Parser {
   //            | "(" expression ")"
   
   private final List<Token> tokens; 
-  private int current = 0;
+  private int i = 0;
 
   Parser(List<Token> tokens) {
     this.tokens = tokens; 
   } 
 
   Expr parse() {
+    // return the Expr tree. 
     return expression();
   }
 
-  private boolean match(TokenType... types) {
-    for (TokenType type : types) {
-      if (check(type)) {
-        advance();
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  private boolean check(TokenType type) {
-    if (isAtEnd()) return false;
-    return peek().type == type;
-  }
-
-  private Token advance() {
-    if (!isAtEnd()) current++;
-    return previous();
-  }
-
-  private boolean isAtEnd() {
-    return peek().type == TokenType.EOF;
-  }
-
-  private Token peek() {
-    return tokens.get(current);
-  }
-
-  private Token previous() {
-    return tokens.get(current - 1);
-  }
-
   private Expr expression() {
-    // expression → equality
+    // expression -> equality
     return equality();
   } 
 
@@ -73,9 +41,10 @@ class Parser {
     // equality   → comparison ( ( "==" | "!=" ) comparison )*
     Expr expr = comparison();
 
-    while (match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
-      Token operator = previous();
-      Expr right = comparison(); // this call should also add 1
+    while (this.tokens.get(i).type == TokenType.BANG_EQUAL || this.tokens.get(i).type == TokenType.EQUAL_EQUAL) {
+      Token operator = this.tokens.get(i);
+      i++;
+      Expr right = comparison(); 
       expr = new Expr.Binary(expr, operator, right);
     }
 
@@ -85,8 +54,9 @@ class Parser {
   private Expr comparison() {
     Expr expr = term();
 
-    while (match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
-      Token operator = previous();
+    while (this.tokens.get(i).type == TokenType.GREATER || this.tokens.get(i).type == TokenType.GREATER_EQUAL || this.tokens.get(i).type == TokenType.LESS || this.tokens.get(i).type == TokenType.LESS_EQUAL) {
+      Token operator = this.tokens.get(i); 
+      i++;
       Expr right = term();
       expr = new Expr.Binary(expr, operator, right);
     }
@@ -97,8 +67,9 @@ class Parser {
   private Expr term() {
     Expr expr = factor();
 
-    while (match(TokenType.MINUS, TokenType.PLUS)) {
-      Token operator = previous();
+    while (this.tokens.get(i).type == TokenType.MINUS || this.tokens.get(i).type == TokenType.PLUS) {
+      Token operator = this.tokens.get(i); 
+      i++;
       Expr right = factor();
       expr = new Expr.Binary(expr, operator, right);
     }
@@ -109,8 +80,9 @@ class Parser {
   private Expr factor() {
     Expr expr = unary();
 
-    while (match(TokenType.SLASH, TokenType.STAR)) {
-      Token operator = previous();
+    while (this.tokens.get(i).type == TokenType.SLASH || this.tokens.get(i).type == TokenType.STAR) {
+      Token operator = this.tokens.get(i); 
+      i++;
       Expr right = unary();
       expr = new Expr.Binary(expr, operator, right);
     }
@@ -119,8 +91,9 @@ class Parser {
   }
 
   private Expr unary() {
-    if (match(TokenType.BANG, TokenType.MINUS)) {
-      Token operator = previous();
+    if (this.tokens.get(i).type == TokenType.BANG || this.tokens.get(i).type == TokenType.MINUS) {
+      Token operator = this.tokens.get(i);
+      i++;
       Expr right = unary();
       return new Expr.Unary(operator, right);
     }
@@ -129,22 +102,33 @@ class Parser {
   }
 
   private Expr primary() {
-    if (match(TokenType.FALSE)) return new Expr.Literal(false);
-    if (match(TokenType.TRUE)) return new Expr.Literal(true);
-    if (match(TokenType.NIL)) return new Expr.Literal(null);
-
-    if (match(TokenType.NUMBER, TokenType.STRING)) {
-      return new Expr.Literal(previous().literal);
+    if (this.tokens.get(i).type == TokenType.FALSE) { 
+      i++;
+      return new Expr.Literal(false); 
+    }
+    if (this.tokens.get(i).type == TokenType.TRUE) { 
+      i++;
+      return new Expr.Literal(true);
+    }
+    if (this.tokens.get(i).type == TokenType.NIL) { 
+      i++;
+      return new Expr.Literal(null);
+    }
+    if (this.tokens.get(i).type == TokenType.NUMBER || this.tokens.get(i).type == TokenType.STRING) {
+      Token token = this.tokens.get(i); 
+      i++;
+      return new Expr.Literal(token.literal);
     }
 
-    if (match(TokenType.LEFT_PAREN)) {
+    if (this.tokens.get(i).type == TokenType.LEFT_PAREN) {
+      i++;
       Expr expr = expression();
-
-      if (check(TokenType.RIGHT_PAREN)) {
-        advance(); 
+      
+      if (this.tokens.get(i).type == TokenType.RIGHT_PAREN) {
+	i++;
       }
       else {
-        System.out.println("bruh"); 
+	throw new RuntimeException("Left parenthesis was not closed.");
       }
       return new Expr.Grouping(expr);
     }
