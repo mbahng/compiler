@@ -87,10 +87,14 @@ public class Scanner {
         case '=': 
           if (j + 1 < source.length() && source.charAt(j+1) == '=') {
             j += 2;
-            addToken(TokenType.EQUAL_EQUAL); 
+            addToken(TokenType.EQUAL_EQUAL);
           }
+	  else if (j + 1 < source.length() && source.charAt(j+1) == ' ') {
+	    j++;
+	    addToken(TokenType.EQUAL);
+	  }
           else { 
-            addToken(TokenType.EQUAL); 
+	    throw new RuntimeException("Syntax Error with equals sign.");
           }
           break;
         case '>': 
